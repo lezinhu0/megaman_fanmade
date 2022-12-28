@@ -1,0 +1,77 @@
+<html>
+<head>
+    <script src="Handler.js"></script>
+    <script src="Player.js"></script>
+    <script src="Platform.js"></script>
+    <script src="Camera.js"></script>
+    <script src="Functions.js"></script>
+    <script src="Controls.js"></script>
+    <script src="Projectile.js"></script>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const _WIDTH = 800;
+        const _HEIGHT = 600;
+        var fps = 0, tickrate = 0, frames = 0, ticks = 0;
+
+        var canvas = document.getElementById('canvas');
+        canvas.width = _WIDTH;
+        canvas.height = _HEIGHT;
+
+        var g = canvas.getContext('2d');
+
+        var handler = new Handler();
+        
+        document.addEventListener('keydown', Controls.keydown);
+        document.addEventListener('keyup', Controls.keyup);
+        
+
+        function newGame() {
+            handler.player = new Player(50, -100);
+            handler.objects = [];
+            for (i = 0; i < 3; i++) {
+                handler.add(new Platform(i * 450, 500 - (i * 0)));
+            }
+        }
+        newGame();
+
+        setInterval(() => {
+            fps = frames;
+            tickrate = ticks;
+
+            frames = 0;
+            ticks = 0;
+        }, 1000);
+
+        setInterval(() => { //tick
+            handler.tick();
+
+            ticks++;
+        }, 16);
+
+        setInterval(() => { //render
+            g.fillStyle = 'white';
+            g.fillRect(0, 0, _WIDTH, _HEIGHT);
+
+            g.strokeStyle = 'black';
+            g.beginPath();
+            g.rect(0, 0, _WIDTH, _HEIGHT);
+            g.stroke();
+
+            handler.render(g);
+            
+            g.fillStyle = 'black';
+            g.font = '20px sans-serif';
+            var y = 0;
+            g.fillText('FPS: ' + fps, 10, y += 20);
+            g.fillText('Tickrate: ' + tickrate, 10, y += 20);
+            g.fillText('Objects: ' + handler.objects.length, 10, y += 20);
+            g.fillText('Current frame: ' + handler.player.currentFrame + ', frame duration: ' + handler.player.frameDuration, 10, y += 20);
+
+            frames++;
+        }, 8);
+    </script>
+</body>
+</html>
