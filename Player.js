@@ -289,12 +289,6 @@ class Player {
             this.currentFrame = 0;
             this.frameDuration = this.animation.imgs[this.currentFrame].duration;
 
-            // var base = this.y + this.height;
-
-            // this.width = 80;
-            // this.height = 80;
-
-            // this.y = base - this.height;
         }
 
         if (this.landed && this.spawning) {
@@ -306,36 +300,29 @@ class Player {
 
             if (this.currentFrame == 1) {
                 var center = this.x + this.width / 2;
-                // this.width = 50;
                 this.x = center - this.width/2;
             }
 
             if (this.currentFrame == 2) {
                 var center = this.x + this.width / 2;
-                // this.width = 80;
                 this.x = center - this.width/2;
             }
 
             if (this.currentFrame == 3) {
                 var center = this.x + this.width / 2;
-                // this.width = 80;
                 this.x = center - this.width/2;
             }
 
             if (this.currentFrame == this.animation.imgs.length - 1) {
                 setTimeout(() => {
+                    dialog = undefined;
                     this.spawning = false;
-                }, 2000);
+                }, (firstTry ? 9500 : 400));
             }
         }
 
         if (!this.landed && !this.spawning && !this.airdashing && !this.hurting) {
             this.animation = Player.animations.get('jumpAnimation');
-
-            // var base = this.y + this.height;
-            // this.height = 110;
-            // this.width = 90;
-            // this.y = base - this.height;
 
             if (this.velY >= 0) {
                 this.currentFrame = 1;
