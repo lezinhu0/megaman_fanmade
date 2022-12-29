@@ -382,7 +382,7 @@ class Player {
         }
 
         if (gamestate == 'BOSS_BATTLE') {
-            this.x += this.velX;
+            this.x = clamp(this.x + this.velX, 0, 800 - this.width);
 
             if (this.velX < 0) {
                 this.facingRight = false;
