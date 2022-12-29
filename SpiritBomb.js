@@ -28,7 +28,7 @@ class SpiritBomb {
         }
 
         if (this.phase == 1) {
-            var speed = 12;
+            var speed = 10;
             const player = handler.player;
 
             var dx = (this.x + this.width / 2) - (player.x + player.width / 2);

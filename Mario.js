@@ -54,20 +54,21 @@ class Mario {
         this.height = 100;
         this.x = x;
         this.y = y - this.height;
-        this.speed = 2;
+        this.speed = 3;
         this.velX = 0;
         this.velY = 0;
         this.animation = Mario.animations.get('idleAnimation');
         this.currentFrame = 0;
         this.frameDuration = this.animation.imgs[0].duration;
         this.facingRight = false;
-        this.hp = 50, this.maxHp = this.hp;
+        this.hp = 75, this.maxHp = this.hp;
         this.imune = true;
         this.type = 'BOSS';
         this.state = 'WALKING';
         this.phase = 0;
         this.bombCount = 0;
         this.specialCd = 300;
+        this.visible = true;
 
         setTimeout(() => {
             this.imune = false;
@@ -135,11 +136,24 @@ class Mario {
         }
     }
 
+    startFlashing = function(interval, duration) {
+        var flashInterval = setInterval(() => {
+            this.visible = !this.visible;
+        }, interval);
+
+        setTimeout(() => {
+            clearInterval(flashInterval);
+            this.visible = true;
+        }, duration);
+    }
+
     takeDamage = function() {
         if (this.imune) {
             return;
         }
         this.hp--;
+
+        this.startFlashing(30, 500);
 
         this.imune = true;
         setTimeout(() => {
@@ -162,7 +176,6 @@ class Mario {
             if(this.phase == 0) {
                 this.velX = 0;
                 
-                this.specialCd = 1000;
                 this.bombCount = 0;
                 var canGoNext = true;
                 if (this.x > 650) {
@@ -199,7 +212,7 @@ class Mario {
                             this.phase = 3;
                         }, 1000);
                     }
-                }, 500);
+                }, 1100);
             }
 
             if (this.phase == 3) {
@@ -218,6 +231,7 @@ class Mario {
                 this.phase = 0;
                 this.state = 'WALKING';
                 this.velX = -this.speed;
+                this.specialCd = 400;
             }
 
         }
@@ -225,7 +239,6 @@ class Mario {
         if (this.state == 'ATTACK2') {
             if(this.phase == 0) {
                 this.velX = 0;
-                this.specialCd = 1000;
                 var canGoNext = true;
                 if (this.x > 650) {
                     this.x = clamp(this.x - 14, 650, 800);
@@ -261,6 +274,7 @@ class Mario {
                 this.phase = 0;
                 this.state = 'WALKING';
                 this.velX = this.speed;
+                this.specialCd = 400;
             }
         }
 
@@ -285,6 +299,18 @@ class Mario {
     }
 
     render = function() {
+        g.fillStyle = 'green';
+        g.fillRect(this.x, this.y - 20, this.width * clamp((this.hp / this.maxHp), 0, 100), 5);
+
+        g.strokeStyle = 'black';
+        g.beginPath();
+        g.rect(this.x, this.y - 20, this.width, 5);
+        g.stroke();
+
+        if (!this.visible) {
+            return;
+        }
+
         if (this.facingRight) {
             g.drawImage(this.animation.imgs[this.currentFrame], this.x, this.y, this.width, this.height);
         } else {
@@ -295,13 +321,6 @@ class Mario {
             g.restore();
         }
 
-        g.fillStyle = 'green';
-        g.fillRect(this.x, this.y - 20, this.width * clamp((this.hp / this.maxHp), 0, 100), 5);
-
-        g.strokeStyle = 'black';
-        g.beginPath();
-        g.rect(this.x, this.y - 20, this.width, 5);
-        g.stroke();
 
     }
 }
