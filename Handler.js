@@ -58,7 +58,7 @@ class Handler {
         var selectedObjs = [];
 
         for (let obj of this.objects) {
-            if (obj.type && obj.type == 'projectile') {
+            if (obj.type && obj.type == type) {
                 selectedObjs.push(obj);
             }
         }

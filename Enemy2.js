@@ -62,7 +62,7 @@ class Enemy2 {
         }
 
         handler.selectByType('projectile').forEach(obj => {
-            if (intersects(this, obj)) {
+            if (intersects(this, obj, obj.velX)) {
                 handler.remove(this);
                 handler.remove(obj);
                 return;

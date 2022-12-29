@@ -15,6 +15,9 @@ class EventArea {
 
         if (this.x + this.width <= 0) {
             gamestate = 'BOSS_BATTLE';
+            handler.remove(this);
+            holder = new Mario(650, 500);
+            handler.add(holder);
         }
     }
 

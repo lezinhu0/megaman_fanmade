@@ -6,6 +6,10 @@ class Controls {
         if (e.keyCode == 32 && !Controls.isPressed(32)) {
             handler.player.jump();
         }
+
+        if (e.keyCode == 70 && !Controls.isPressed(70)) {
+            handler.player.shoot();
+        }
         
         Controls.keys.add(e.keyCode);
     }

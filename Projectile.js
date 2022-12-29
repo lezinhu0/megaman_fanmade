@@ -12,7 +12,7 @@ class Projectile {
     tick = function() {
         this.x += this.velX;
 
-        if (this.x >= _WIDTH) {
+        if (this.x >= _WIDTH || this.x + this.width <= 0) {
             handler.remove(this);
         }
     }

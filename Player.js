@@ -149,33 +149,33 @@ class Player {
         this.imune = false;
         this.visible = true;
         this.facingRight = true;
+        this.enableControls = true;
     }
 
     checkControls = function() {
         if (gamestate == 'BOSS_BATTLE') {
-            if (Controls.isPressed(65)) {
-                if (!this.landed) {
-                    this.velX = -Math.abs(this.velX);
-                } else {
-                    this.velX = -this.speed / 2;
-                }
-            }
-    
-            if (Controls.isPressed(68)) {
-                if (!this.landed) {
-                    this.velX = Math.abs(this.velX);
-                } else {
-                    this.velX = this.speed / 2;
-                }
-            }
-    
-            if (!Controls.isPressed(65, 68)) {
-                this.velX = 0;
-            }
-        }
+            if (this.enableControls) {
 
-        if (Controls.isPressed(70)) {
-            this.shoot();
+                if (Controls.isPressed(65)) {
+                    if (!this.landed) {
+                        this.velX = -Math.abs(this.velX);
+                    } else {
+                        this.velX = -this.speed / 2;
+                    }
+                }
+        
+                if (Controls.isPressed(68)) {
+                    if (!this.landed) {
+                        this.velX = Math.abs(this.velX);
+                    } else {
+                        this.velX = this.speed / 2;
+                    }
+                }
+        
+                if (!Controls.isPressed(65, 68)) {
+                    this.velX = 0;
+                }
+            }
         }
 
         if (this.shooting && !Controls.isPressed(70)) {
@@ -204,11 +204,15 @@ class Player {
         this.imune = true;
         this.velY = 0;
         this.airdashing = false;
+        this.enableControls = false;
+
+
 
         setTimeout(() => {
             this.velX = this.speed;
             this.hurting = false;
-            this.startFlashing(100, 3000 - 1200);
+            this.startFlashing(25, 3000 - 1200);
+            this.enableControls = true;
         }, 1200);
 
         setTimeout(() => {
@@ -217,7 +221,7 @@ class Player {
     }
 
     shoot = function() {
-        if (this.spawning || this.shooting || this.hurting || this.airdashing) {
+        if (this.spawning || this.shooting || this.hurting || this.airdashing || !this.enableControls) {
             return;
         }
 
@@ -227,7 +231,7 @@ class Player {
     }
 
     airdash = function() {
-        if (this.airdashing || !this.canAirdash) {
+        if (this.airdashing || !this.canAirdash || !this.enableControls) {
             return;
         }
 
@@ -243,7 +247,7 @@ class Player {
     }
 
     jump = function() {
-        if (this.spawning || this.hurting) {
+        if (this.spawning || this.hurting || !this.enableControls) {
             return;
         }
 
@@ -384,9 +388,9 @@ class Player {
         if (gamestate == 'BOSS_BATTLE') {
             this.x = clamp(this.x + this.velX, 0, 800 - this.width);
 
-            if (this.velX < 0) {
+            if (this.velX < 0 && !this.hurting) {
                 this.facingRight = false;
-            } else if (this.velX > 0) {
+            } else if (this.velX > 0 && !this.hurting) {
                 this.facingRight = true;
             }
         }
@@ -427,6 +431,12 @@ class Player {
                     this.takeDamage();
                 }
             }
+
+            for (let obj of handler.selectByType('BOSS')) {
+                if (intersects(this, obj)) {
+                    this.takeDamage();
+                }
+            }
         }
         
     }
@@ -447,9 +457,9 @@ class Player {
             g.restore();
         }
 
-        g.strokeStyle = 'red';
-        g.beginPath();
-        g.rect(this.x, this.y, this.width, this.height);
-        g.stroke();
+        // g.strokeStyle = 'red';
+        // g.beginPath();
+        // g.rect(this.x, this.y, this.width, this.height);
+        // g.stroke();
     }
 }

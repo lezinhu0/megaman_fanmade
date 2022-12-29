@@ -11,6 +11,8 @@
     <script src="Enemy2.js"></script>
     <script src="Bowser.js"></script>
     <script src="EventArea.js"></script>
+    <script src="Mario.js"></script>
+    <script src="SpiritBomb.js"></script>
 </head>
 <body>
     <canvas id="canvas"></canvas>
@@ -32,7 +34,7 @@
         var gamestate = 'INFINITE_RUNNER';
         var holder = undefined;
 
-        var countDown = 10;
+        var countDown;
         var countDownInterval = undefined;
         
         document.addEventListener('keydown', Controls.keydown);
@@ -47,7 +49,7 @@
                 handler.add(new Platform(i * 450, 500 - (i * 0)));
             }
             background.x = 0;
-            countDown = 10;
+            countDown = 2;
 
             handler.add(new Bowser(400, 500));
 
@@ -114,6 +116,9 @@
             g.fillText('Tickrate: ' + tickrate, 10, y += 20);
             g.fillText('Objects: ' + handler.objects.length, 10, y += 20);
             g.fillText('gamestate: ' + gamestate, 10, y += 20);
+            g.fillText('Boss state: ' + holder?.state, 10, y += 20);
+            g.fillText('Boss phase: ' + holder?.phase, 10, y += 20);
+            g.fillText('SpecialCd: ' + holder?.specialCd, 10, y += 20);
 
             g.textAlign = 'right';
             g.fillText('Time to finish: ' + countDown, _WIDTH - 10, 20);
