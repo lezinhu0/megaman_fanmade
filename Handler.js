@@ -30,10 +30,28 @@ class Handler {
     }
 
     render = function(g) {
-        this.player?.render(g);
-
         this.objects.forEach(obj => {
             obj.render(g);
         });
+
+        this.player?.render(g);
+    }
+
+    sort = function() {
+        this.objects.sort((a, b) => {
+            if (a.behaviors && a.behaviors.indexOf('platform') > -1) {
+                if (b.behaviors && b.behaviors.indexOf('platform') > -1) {
+                    return 0;
+                }
+                return -1;
+            }
+
+            if (b.behaviors && b.behaviors.indexOf('platform') > -1) {
+                return 1;
+            };
+
+            return 0;
+        });
+        console.log(this.objects);
     }
 }

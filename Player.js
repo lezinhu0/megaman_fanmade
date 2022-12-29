@@ -94,6 +94,18 @@ class Player {
             animation.imgs.push(img);
         }
         Player.animations.set('hurtAnimation', hurtAnimation);
+
+        var airDashAnimation = {
+            repeat: true
+        };
+        animation = airDashAnimation;
+        animation.imgs = [];
+
+        img = new Image();
+        img.src = 'src/assets/megaman/airdash/airdash.png';
+        img.duration = 1000;
+        animation.imgs.push(img);
+        Player.animations.set('airDashAnimation', airDashAnimation);
     }
 
     constructor(x, y) {
@@ -112,13 +124,14 @@ class Player {
         this.shooting = false;
         this.shootCd = 0;
         this.hurting = false;
+        this.airdashing = false;
+        this.canAirdash = false;
+        this.speed = 12;
+        this.imune = false;
+        this.visible = true;
     }
 
     checkControls = function() {
-        if (Controls.isPressed(32)) {
-            this.jump();
-        }
-
         if (Controls.isPressed(107)) {
             this.velX++;
         }
@@ -136,8 +149,39 @@ class Player {
         }
     }
 
+    startFlashing = function(interval, duration) {
+        var interval = setInterval(() => {
+            this.visible = !this.visible;
+        }, interval);
+
+        setTimeout(() => {
+            clearInterval(interval);
+            this.visible = true;
+        }, duration);
+    }
+
+    takeDamage = function() {
+        if (this.imune) {
+            return;
+        }
+
+        this.velX = -4;
+        this.hurting = true;
+        this.imune = true;
+
+        setTimeout(() => {
+            this.velX = this.speed;
+            this.hurting = false;
+            this.startFlashing(100, 3000 - 1200);
+        }, 1200);
+
+        setTimeout(() => {
+            this.imune = false;
+        }, 3000);
+    }
+
     shoot = function() {
-        if (this.spawning || this.shooting || this.hurting) {
+        if (this.spawning || this.shooting || this.hurting || this.airdashing) {
             return;
         }
 
@@ -146,15 +190,50 @@ class Player {
         handler.add(new Projectile(this.x + this.width - 5, this.y + 33));
     }
 
-    jump = function() {
-        if (this.jumping || this.hurting) {
+    airdash = function() {
+        if (this.airdashing || !this.canAirdash) {
             return;
         }
+
+        this.airdashing = true;
+        this.velY = 0;
+        this.velX += 4;
+        this.canAirdash = false;
+        setTimeout(() => {
+           this.airdashing = false;
+           this.velX = this.speed;
+        }, 500);
+    }
+
+    jump = function() {
+        if (this.spawning || this.hurting) {
+            return;
+        }
+
+        if (this.jumping) {
+            this.airdash();
+            return;
+        }
+
+        if (!this.landed) {
+            return;
+        }
+
         this.velY = -15;
         this.jumping = true;
+
+        setTimeout(() => {
+            this.canAirdash = true;
+        }, 150);
     }
 
     updateAnimations = function() {
+        if (this.airdashing && this.animation != Player.animations.get('airDashAnimation')) {
+            this.animation = Player.animations.get('airDashAnimation');
+            this.currentFrame = 0;
+            this.frameDuration = this.animation.imgs[this.currentFrame].duration;
+        }
+
         if (this.landed && this.velX != 0 && this.animation != Player.animations.get('runAnimation') &&
             !this.spawning && !this.shooting && this.shootCd <= 0 && !this.hurting) {
 
@@ -200,7 +279,7 @@ class Player {
             }
         }
 
-        if (!this.landed && !this.spawning) {
+        if (!this.landed && !this.spawning && !this.airdashing) {
             this.animation = Player.animations.get('jumpAnimation');
 
             var base = this.y + this.height;
@@ -264,34 +343,32 @@ class Player {
         handler.selectByBehavior('platform').forEach(obj => {
             if (obj.y > this.x + this.height && intersects(this, obj, 0, 5)) {
                 landed = true;
+                this.canAirdash = false;
                 this.velY = 0;
                 this.y = obj.y - this.height;
                 this.jumping = false;
 
                 if (!this.spawning && this.velX == 0) {
-                    this.velX = 12;
+                    this.velX = this.speed;
                 }
             }
 
             if (intersects(this, obj, this.velX, 0)) {
-                this.velX = -2;
-                this.hurting = true;
-
-                setTimeout(() => {
-                    this.velX = 12;
-                    this.hurting = false;
-                }, 1000);
+                this.takeDamage();
             }
         });
         this.landed = landed;
 
-        if (!this.landed) {
+        if (!this.landed && !this.airdashing) {
             this.velY += 0.75;
         }
         
     }
 
     render = function(g) {
+        if (!this.visible) {
+            return;
+        }
         const img = this.animation.imgs[this.currentFrame];
         g.drawImage(img, this.x, this.y, this.width, this.height);
     }

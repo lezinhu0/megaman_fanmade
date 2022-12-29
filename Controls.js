@@ -2,6 +2,11 @@ class Controls {
     static keys = new Set();
 
     static keydown = function(e) {
+
+        if (e.keyCode == 32 && !Controls.isPressed(32)) {
+            handler.player.jump();
+        }
+        
         Controls.keys.add(e.keyCode);
     }
     

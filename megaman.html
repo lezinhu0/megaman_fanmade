@@ -7,6 +7,7 @@
     <script src="Functions.js"></script>
     <script src="Controls.js"></script>
     <script src="Projectile.js"></script>
+    <script src="Enemy1.js"></script>
 </head>
 <body>
     <canvas id="canvas"></canvas>
@@ -19,10 +20,15 @@
         var canvas = document.getElementById('canvas');
         canvas.width = _WIDTH;
         canvas.height = _HEIGHT;
-
         var g = canvas.getContext('2d');
-
         var handler = new Handler();
+        var background = {};
+        background.img = new Image();
+        background.img.src = 'src/assets/background/background.png';
+        background.x = 0;
+
+        var countDown = 150;
+        var countDownInterval = undefined;
         
         document.addEventListener('keydown', Controls.keydown);
         document.addEventListener('keyup', Controls.keyup);
@@ -34,6 +40,13 @@
             for (i = 0; i < 3; i++) {
                 handler.add(new Platform(i * 450, 500 - (i * 0)));
             }
+            background.x = 0;
+            countDown = 150;
+
+            clearInterval(countDownInterval);
+            countDownInterval = setInterval(() => {
+                countDown--;
+            }, 1000);
         }
         newGame();
 
@@ -48,6 +61,11 @@
         setInterval(() => { //tick
             handler.tick();
 
+            background.x -= handler.player.velX / 10;
+            if (background.x + background.img.width <= 0) {
+                background.x = 0;
+            }
+
             ticks++;
         }, 16);
 
@@ -60,15 +78,24 @@
             g.rect(0, 0, _WIDTH, _HEIGHT);
             g.stroke();
 
+            for (var i = 0; i < 2; i++) {
+                g.drawImage(background.img, background.x, 0);
+                g.drawImage(background.img, background.x + background.img.width, 0);
+            }
+            
+            handler.sort();
             handler.render(g);
             
             g.fillStyle = 'black';
             g.font = '20px sans-serif';
+            g.textAlign = 'left';
             var y = 0;
             g.fillText('FPS: ' + fps, 10, y += 20);
             g.fillText('Tickrate: ' + tickrate, 10, y += 20);
             g.fillText('Objects: ' + handler.objects.length, 10, y += 20);
-            g.fillText('Current frame: ' + handler.player.currentFrame + ', frame duration: ' + handler.player.frameDuration, 10, y += 20);
+
+            g.textAlign = 'right';
+            g.fillText('Time to finish: ' + countDown, _WIDTH - 10, 20);
 
             frames++;
         }, 8);
