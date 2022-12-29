@@ -53,4 +53,16 @@ class Handler {
             return 0;
         });
     }
+
+    selectByType = function(type) {
+        var selectedObjs = [];
+
+        for (let obj of this.objects) {
+            if (obj.type && obj.type == 'projectile') {
+                selectedObjs.push(obj);
+            }
+        }
+
+        return selectedObjs;
+    }
 }

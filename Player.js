@@ -106,6 +106,25 @@ class Player {
         img.duration = 1000;
         animation.imgs.push(img);
         Player.animations.set('airDashAnimation', airDashAnimation);
+
+        var idleAnimation = {
+            repeat: true
+        }
+        animation = idleAnimation;
+        animation.imgs = [];
+
+        img = new Image();
+        img.src = 'src/assets/megaman/idle/idle-1.png';
+        img.duration = 35;
+        animation.imgs.push(img);
+
+        img = new Image();
+        img.src = 'src/assets/megaman/idle/idle-2.png';
+        img.duration = 35;
+        animation.imgs.push(img);
+
+        Player.animations.set('idleAnimation', idleAnimation);
+
     }
 
     constructor(x, y) {
@@ -113,7 +132,7 @@ class Player {
         this.y = y;
         this.velX = 0;
         this.velY = 50;
-        this.width = 20;
+        this.width = 80;
         this.height = 80;
         this.landed = false;
         this.jumping = false;
@@ -129,15 +148,30 @@ class Player {
         this.speed = 12;
         this.imune = false;
         this.visible = true;
+        this.facingRight = true;
     }
 
     checkControls = function() {
-        if (Controls.isPressed(107)) {
-            this.velX++;
-        }
-
-        if (Controls.isPressed(109)) {
-            this.velX--;
+        if (gamestate == 'BOSS_BATTLE') {
+            if (Controls.isPressed(65)) {
+                if (!this.landed) {
+                    this.velX = -Math.abs(this.velX);
+                } else {
+                    this.velX = -this.speed / 2;
+                }
+            }
+    
+            if (Controls.isPressed(68)) {
+                if (!this.landed) {
+                    this.velX = Math.abs(this.velX);
+                } else {
+                    this.velX = this.speed / 2;
+                }
+            }
+    
+            if (!Controls.isPressed(65, 68)) {
+                this.velX = 0;
+            }
         }
 
         if (Controls.isPressed(70)) {
@@ -168,6 +202,8 @@ class Player {
         this.velX = -4;
         this.hurting = true;
         this.imune = true;
+        this.velY = 0;
+        this.airdashing = false;
 
         setTimeout(() => {
             this.velX = this.speed;
@@ -187,7 +223,7 @@ class Player {
 
         this.shootCd = 40;
         this.shooting = true;
-        handler.add(new Projectile(this.x + this.width - 5, this.y + 33));
+        handler.add(new Projectile(this.x + this.width - 25, this.y + 36, this.facingRight));
     }
 
     airdash = function() {
@@ -197,11 +233,12 @@ class Player {
 
         this.airdashing = true;
         this.velY = 0;
-        this.velX += 4;
+
+        this.velX = (gamestate == 'BOSS_BATTLE' ? (this.speed / 2) * 1.5 : this.speed * 1.3);
+
         this.canAirdash = false;
         setTimeout(() => {
            this.airdashing = false;
-           this.velX = this.speed;
         }, 500);
     }
 
@@ -228,6 +265,13 @@ class Player {
     }
 
     updateAnimations = function() {
+        var tempAnimation = Player.animations.get('idleAnimation');
+        if (this.velX == 0 && this.landed && !this.spawning && this.animation != tempAnimation) {
+            this.animation = tempAnimation;
+            this.currentFrame = 0;
+            this.frameDuration = tempAnimation.imgs[this.currentFrame].duration;
+        }
+
         if (this.airdashing && this.animation != Player.animations.get('airDashAnimation')) {
             this.animation = Player.animations.get('airDashAnimation');
             this.currentFrame = 0;
@@ -241,12 +285,12 @@ class Player {
             this.currentFrame = 0;
             this.frameDuration = this.animation.imgs[this.currentFrame].duration;
 
-            var base = this.y + this.height;
+            // var base = this.y + this.height;
 
-            this.width = 80;
-            this.height = 80;
+            // this.width = 80;
+            // this.height = 80;
 
-            this.y = base - this.height;
+            // this.y = base - this.height;
         }
 
         if (this.landed && this.spawning) {
@@ -258,19 +302,19 @@ class Player {
 
             if (this.currentFrame == 1) {
                 var center = this.x + this.width / 2;
-                this.width = 50;
+                // this.width = 50;
                 this.x = center - this.width/2;
             }
 
             if (this.currentFrame == 2) {
                 var center = this.x + this.width / 2;
-                this.width = 80;
+                // this.width = 80;
                 this.x = center - this.width/2;
             }
 
             if (this.currentFrame == 3) {
                 var center = this.x + this.width / 2;
-                this.width = 80;
+                // this.width = 80;
                 this.x = center - this.width/2;
             }
 
@@ -281,18 +325,18 @@ class Player {
             }
         }
 
-        if (!this.landed && !this.spawning && !this.airdashing) {
+        if (!this.landed && !this.spawning && !this.airdashing && !this.hurting) {
             this.animation = Player.animations.get('jumpAnimation');
 
-            var base = this.y + this.height;
-            this.height = 110;
-            this.width = 90;
-            this.y = base - this.height;
+            // var base = this.y + this.height;
+            // this.height = 110;
+            // this.width = 90;
+            // this.y = base - this.height;
 
             if (this.velY >= 0) {
-                this.currentFrame = 0;
-            } else {
                 this.currentFrame = 1;
+            } else {
+                this.currentFrame = 0;
             }
 
             this.frameDuration = this.animation.imgs[this.currentFrame].duration;
@@ -337,32 +381,52 @@ class Player {
             return;
         }
 
-        this.shootCd--;
+        if (gamestate == 'BOSS_BATTLE') {
+            this.x += this.velX;
 
-        this.y += this.velY;
-
+            if (this.velX < 0) {
+                this.facingRight = false;
+            } else if (this.velX > 0) {
+                this.facingRight = true;
+            }
+        }
+        
+        this.shootCd = clamp(this.shootCd - 1, 0, 100);
+        
+        if (!this.airdashing && !this.hurting) {
+            this.velY += 0.75;
+        }
+        
         var landed = false;
-        handler.selectByBehavior('platform').forEach(obj => {
-            if (obj.y > this.x + this.height && intersects(this, obj, 0, 5)) {
+        for (let obj of handler.selectByBehavior('platform')) {
+            if (obj.y >= this.y + this.height && intersects(this, obj, 0, this.velY)) {
                 landed = true;
                 this.canAirdash = false;
                 this.velY = 0;
                 this.y = obj.y - this.height;
                 this.jumping = false;
 
-                if (!this.spawning && this.velX == 0) {
+                if (!this.spawning && gamestate == 'INFINITE_RUNNER') {
                     this.velX = this.speed;
                 }
+                break;
             }
 
-            if (intersects(this, obj, this.velX, 0)) {
-                this.takeDamage();
-            }
-        });
+        }
         this.landed = landed;
 
-        if (!this.landed && !this.airdashing) {
-            this.velY += 0.75;
+        
+
+        if (!this.landed) {
+            this.y += this.velY;
+        }
+
+        if (!this.spawning) {
+            for (let obj of handler.selectByBehavior('platform')) {
+                if (intersects(this, obj, this.velX, 0)) {
+                    this.takeDamage();
+                }
+            }
         }
         
     }
@@ -371,7 +435,21 @@ class Player {
         if (!this.visible) {
             return;
         }
+
         const img = this.animation.imgs[this.currentFrame];
-        g.drawImage(img, this.x, this.y, this.width, this.height);
+        if (this.facingRight) {
+            g.drawImage(img, this.x, this.y, this.width, this.height);
+        } else {
+            g.save();
+            g.translate(this.width, 0);
+            g.scale(-1, 1);
+            g.drawImage(this.animation.imgs[this.currentFrame], -this.x, this.y, this.width, this.height);
+            g.restore();
+        }
+
+        g.strokeStyle = 'red';
+        g.beginPath();
+        g.rect(this.x, this.y, this.width, this.height);
+        g.stroke();
     }
 }

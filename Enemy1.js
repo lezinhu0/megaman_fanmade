@@ -15,7 +15,10 @@ class Enemy1 {
 
     tick = function() {
         const player = handler.player;
-        this.x -= player.velX;
+
+        if (gamestate == 'INFINITE_RUNNER') {
+            this.x -= player.velX;
+        }
 
         if (this.x + this.width <= 0) {
             handler.remove(this);
@@ -23,15 +26,22 @@ class Enemy1 {
         }
 
         if (intersects(this, player)) {
+            holder = this;
             player.takeDamage();
         }
+
+        handler.selectByType('projectile').forEach(obj => {
+            if (intersects(this, obj)) {
+                handler.remove(obj);
+            }
+        });
     }
 
     render = function(g) {
-        g.strokeStyle = 'red';
-        g.beginPath();
-        g.rect(this.x, this.y, this.width, this.height);
-        g.stroke();
+        // g.strokeStyle = 'red';
+        // g.beginPath();
+        // g.rect(this.x, this.y, this.width, this.height);
+        // g.stroke();
         g.drawImage(Enemy1.img, this.x, this.y, this.width, this.height);
     }
 }

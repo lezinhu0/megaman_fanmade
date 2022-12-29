@@ -14,7 +14,12 @@ class Controls {
         Controls.keys.delete(e.keyCode);
     }
 
-    static isPressed = function(keyCode) {
-        return Controls.keys.has(keyCode);
+    static isPressed = function(...keyCodes) {
+        for (let keyCode of keyCodes) {
+            if (Controls.keys.has(keyCode)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

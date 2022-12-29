@@ -8,7 +8,9 @@
     <script src="Controls.js"></script>
     <script src="Projectile.js"></script>
     <script src="Enemy1.js"></script>
+    <script src="Enemy2.js"></script>
     <script src="Bowser.js"></script>
+    <script src="EventArea.js"></script>
 </head>
 <body>
     <canvas id="canvas"></canvas>
@@ -27,8 +29,10 @@
         background.img = new Image();
         background.img.src = 'src/assets/background/background.png';
         background.x = 0;
+        var gamestate = 'INFINITE_RUNNER';
+        var holder = undefined;
 
-        var countDown = 150;
+        var countDown = 10;
         var countDownInterval = undefined;
         
         document.addEventListener('keydown', Controls.keydown);
@@ -36,19 +40,30 @@
         
 
         function newGame() {
+            gamestate = 'INFINITE_RUNNER';
             handler.player = new Player(50, -100);
             handler.objects = [];
             for (i = 0; i < 3; i++) {
                 handler.add(new Platform(i * 450, 500 - (i * 0)));
             }
             background.x = 0;
-            countDown = 150;
+            countDown = 10;
 
             handler.add(new Bowser(400, 500));
 
             clearInterval(countDownInterval);
             countDownInterval = setInterval(() => {
                 countDown--;
+
+                if(countDown <= 0) {
+                    clearInterval(countDownInterval);
+
+                    var x = handler.selectByBehavior('platform').slice(-1)[0].x;
+                    var gap = handler.selectByBehavior('platform').slice(-1)[0].width;
+
+                    handler.add(new Platform(x + gap + 300, 500, 800));
+                    handler.add(new EventArea(x + gap + 300, 0, 50, 500));
+                }
             }, 1000);
         }
         newGame();
@@ -64,9 +79,11 @@
         setInterval(() => { //tick
             handler.tick();
 
-            background.x -= handler.player.velX / 10;
-            if (background.x + background.img.width <= 0) {
-                background.x = 0;
+            if (gamestate == 'INFINITE_RUNNER') {
+                background.x -= handler.player.velX / 10;
+                if (background.x + background.img.width <= 0) {
+                    background.x = 0;
+                }
             }
 
             ticks++;
@@ -96,6 +113,11 @@
             g.fillText('FPS: ' + fps, 10, y += 20);
             g.fillText('Tickrate: ' + tickrate, 10, y += 20);
             g.fillText('Objects: ' + handler.objects.length, 10, y += 20);
+            g.fillText('Landed: ' + handler.player.landed, 10, y += 20);
+            g.fillText('gamestate: ' + gamestate, 10, y += 20);
+            g.fillText('velX: ' + handler.player.velX + ', velY: ' + handler.player.velY, 10, y += 20);
+            g.fillText('x: ' + handler.player.x + ', y: ' + Math.floor(handler.player.y) + 
+            ', width: ' + handler.player.width + ', height: ' + handler.player.height, 10, y += 20);
 
             g.textAlign = 'right';
             g.fillText('Time to finish: ' + countDown, _WIDTH - 10, 20);

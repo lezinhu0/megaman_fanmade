@@ -1,11 +1,12 @@
 class Projectile {
-    constructor(x, y) {
+    constructor(x, y, facingRight) {
         this.x = x;
         this.y = y;
-        this.width = 8;
-        this.height = 8;
-        this.velX = 40;
+        this.width = 14;
+        this.height = 14;
+        this.velX = facingRight ? 40 : -40;
         this.velY = 0;
+        this.type = 'projectile';
     }
 
     tick = function() {
