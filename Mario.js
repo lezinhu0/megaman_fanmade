@@ -254,13 +254,13 @@ class Mario {
 
                 setTimeout(() => {
                     this.phase = 5;
-                }, 8000);
+                }, 8400);
             }
 
             if (this.phase == 5) {
                 this.phase = 0;
                 this.state = 'WALKING';
-                this.velX = -this.speed;
+                this.velX = this.speed;
             }
         }
 
