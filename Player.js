@@ -275,7 +275,9 @@ class Player {
             }
 
             if (this.currentFrame == this.animation.imgs.length - 1) {
-                this.spawning = false;
+                setTimeout(() => {
+                    this.spawning = false;
+                }, 2000);
             }
         }
 

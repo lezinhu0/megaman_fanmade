@@ -52,6 +52,5 @@ class Handler {
 
             return 0;
         });
-        console.log(this.objects);
     }
 }

@@ -8,6 +8,7 @@
     <script src="Controls.js"></script>
     <script src="Projectile.js"></script>
     <script src="Enemy1.js"></script>
+    <script src="Bowser.js"></script>
 </head>
 <body>
     <canvas id="canvas"></canvas>
@@ -42,6 +43,8 @@
             }
             background.x = 0;
             countDown = 150;
+
+            handler.add(new Bowser(400, 500));
 
             clearInterval(countDownInterval);
             countDownInterval = setInterval(() => {
