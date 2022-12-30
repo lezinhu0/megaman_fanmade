@@ -150,6 +150,18 @@ class Player {
         this.visible = true;
         this.facingRight = true;
         this.enableControls = true;
+        this.dying = false;
+        this.hp = 5;
+    }
+
+    die = function() {
+        this.dying = true;
+        this.enableControls = false;
+        this.velX = 0;
+
+        setTimeout(() => {
+            newGame();
+        }, 3000);
     }
 
     checkControls = function() {
@@ -199,6 +211,8 @@ class Player {
             return;
         }
 
+        this.hp--;
+
         this.velX = -4;
         this.hurting = true;
         this.imune = true;
@@ -206,13 +220,13 @@ class Player {
         this.airdashing = false;
         this.enableControls = false;
 
-
-
         setTimeout(() => {
-            this.velX = this.speed;
-            this.hurting = false;
-            this.startFlashing(25, 3000 - 1200);
-            this.enableControls = true;
+            if (!this.dying) {
+                this.velX = this.speed;
+                this.hurting = false;
+                this.startFlashing(25, 3000 - 1200);
+                this.enableControls = true;
+            }
         }, 1200);
 
         setTimeout(() => {
@@ -367,6 +381,10 @@ class Player {
     tick = function() {
         this.updateAnimations();
         this.checkControls();
+
+        if (!this.dying && this.hp <= 0) {
+            this.die();
+        }
 
         if (this.y >= _HEIGHT) {
             newGame();

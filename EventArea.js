@@ -18,6 +18,7 @@ class EventArea {
             handler.remove(this);
             holder = new Mario(650, 500);
             handler.add(holder);
+            handler.player.hp = 5;
         }
     }
 

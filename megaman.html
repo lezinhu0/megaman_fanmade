@@ -35,6 +35,8 @@
         var holder = undefined;
         var firstTry = undefined;
         var dialog = undefined;
+        var portrait = new Image();
+        portrait.src = 'src/assets/megaman/portrait/portrait.png';
 
         var countDown;
         var countDownInterval = undefined;
@@ -71,7 +73,7 @@
                 handler.add(new Platform(i * 450, 500 - (i * 0)));
             }
             background.x = 0;
-            countDown = 0;
+            countDown = 60;
 
             handler.add(new Bowser(400, 500));
 
@@ -144,6 +146,9 @@
                 g.fillText(dialog, _WIDTH / 2, 250);
             }
 
+            g.fillStyle = 'black';
+            g.drawImage(portrait, _WIDTH - 70, 10, 25, 25);
+            g.fillText(handler.player.hp, _WIDTH - 30, 30);
             frames++;
         }, 8);
     </script>
