@@ -12,10 +12,10 @@ class Player {
         var animation = runAnimation;
         animation.imgs = [];
 
-        for (var i = 4; i <= 7; i++) {
+        for (var i = 1; i <= 6; i++) {
             var img = new Image();
             img.src = 'src/assets/megaman/run/run-' + i + '.png';
-            img.duration = 6;
+            img.duration = 5;
             animation.imgs.push(img);
         }
         Player.animations.set('runAnimation', runAnimation);
@@ -132,8 +132,8 @@ class Player {
         this.y = y;
         this.velX = 0;
         this.velY = 50;
-        this.width = 80;
-        this.height = 80;
+        this.width = 85;
+        this.height = 120;
         this.landed = false;
         this.jumping = false;
         this.animation = Player.animations.get('spawnAnimation');
@@ -227,7 +227,7 @@ class Player {
 
         this.shootCd = 40;
         this.shooting = true;
-        handler.add(new Projectile(this.x + this.width / 2, this.y + this.height / 2, this.facingRight));
+        handler.add(new Projectile(this.x + this.width / 2, this.y + this.height / 2 + 15, this.facingRight));
     }
 
     airdash = function() {
@@ -317,8 +317,8 @@ class Player {
                 setTimeout(() => {
                     dialog = undefined;
                     this.spawning = false;
-                }, (firstTry ? 9500 : 400));
-                // }, (100));
+                // }, (firstTry ? 9500 : 400));
+                }, (100));
             }
         }
 
