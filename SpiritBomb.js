@@ -1,16 +1,59 @@
 class SpiritBomb {
+
+    static animation;
+
+    static {
+        var animation = {
+            repeat: true,
+            imgs: []
+        };
+
+        for (var i = 0; i <= 24; i++) {
+            var img = new Image();
+            img.src = '../Assets/fx/glow-circle/25/2500' + (i < 10 ? '0' + i : i) + '.png';
+            img.duration = 1;
+            animation.imgs.push(img);
+        }
+
+        SpiritBomb.animation = animation;
+
+    }
+
     constructor(x, y) {
-        this.width = 50;
-        this.height = 50;
+        this.width = -30;
+        this.height = -30;
         this.x = x - this.width / 2;
         this.y = y - this.height / 2;
         this.velX = 0;
         this.velY = 0;
         this.phase = 0;
         this.hittedPlayer = false;
+        this.animation = SpiritBomb.animation;
+        this.currentFrame = 0;
+        this.frameDuration = this.animation.imgs[0].duration;
+    }
+
+    updateAnimations = function() {
+        this.frameDuration--;
+
+        if (this.frameDuration <= 0) {
+            this.currentFrame++;
+
+            if (this.currentFrame >= this.animation.imgs.length) {
+                if (this.animation.repeat) {
+                    this.currentFrame = 0;
+                } else {
+                    this.currentFrame = this.animation.imgs.length - 1;
+                }
+            }
+
+            this.frameDuration = this.animation.imgs[this.currentFrame].duration;
+        }
     }
 
     tick = function() {
+        this.updateAnimations();
+
         const player = handler.player;
 
         if (this.phase == 0) {
@@ -62,7 +105,7 @@ class SpiritBomb {
     }
 
     render = function(g) {
-        g.fillStyle = 'red';
-        g.fillRect(this.x, this.y, this.width, this.height);
+        var addSize = this.width * 2;
+        g.drawImage(this.animation.imgs[this.currentFrame], this.x - addSize / 2, this.y - addSize / 2, this.width + addSize, this.height + addSize);
     }
 }

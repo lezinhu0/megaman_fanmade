@@ -227,7 +227,7 @@ class Player {
 
         this.shootCd = 40;
         this.shooting = true;
-        handler.add(new Projectile(this.x + this.width - 25, this.y + 36, this.facingRight));
+        handler.add(new Projectile(this.x + this.width / 2, this.y + this.height / 2, this.facingRight));
     }
 
     airdash = function() {
@@ -318,6 +318,7 @@ class Player {
                     dialog = undefined;
                     this.spawning = false;
                 }, (firstTry ? 9500 : 400));
+                // }, (100));
             }
         }
 
@@ -420,7 +421,7 @@ class Player {
             }
 
             for (let obj of handler.selectByType('BOSS')) {
-                if (intersects(this, obj)) {
+                if (intersects(this, obj.getHurtbox())) {
                     this.takeDamage();
                 }
             }

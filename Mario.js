@@ -77,7 +77,7 @@ class Mario {
 
         setInterval(() => {
             if (this.state == 'WALKING' && this.specialCd <= 0) {
-                if (Math.random() >= 0.85) {
+                if (Math.random() >= 0.45) {
                     var random = Math.random();
                     if (random >= 0.5) {
                         this.state = 'ATTACK1';
@@ -90,7 +90,14 @@ class Mario {
         }, 500);
     }
 
-
+    getHurtbox = function() {
+        return {
+            x: this.x + 25,
+            y: this.y,
+            width: this.width - 50,
+            height: this.height
+        };
+    }
 
     updateAnimations = function() {
         var animation = Mario.animations.get('idleAnimation');
@@ -212,7 +219,7 @@ class Mario {
                             this.phase = 3;
                         }, 1000);
                     }
-                }, 1100);
+                }, 900);
             }
 
             if (this.phase == 3) {
@@ -291,7 +298,7 @@ class Mario {
         }
 
         for (let projectile of handler.selectByType('projectile')) {
-            if (intersects(this, projectile, projectile.velX)) {
+            if (intersects(this.getHurtbox(), projectile, projectile.velX)) {
                 handler.remove(projectile);
                 this.takeDamage();
             }
@@ -321,6 +328,9 @@ class Mario {
             g.restore();
         }
 
-
+        g.strokeStyle = 'red';
+        g.beginPath();
+        g.rect(this.getHurtbox().x, this.getHurtbox().y, this.getHurtbox().width, this.getHurtbox().height);
+        g.stroke();
     }
 }
