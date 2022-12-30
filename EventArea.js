@@ -22,8 +22,8 @@ class EventArea {
     }
 
     render = function(g) {
-        g.fillStyle = 'yellow';
-        g.fillRect(this.x, this.y, this.width, this.height);
+        // g.fillStyle = 'yellow';
+        // g.fillRect(this.x, this.y, this.width, this.height);
     }
 
 }

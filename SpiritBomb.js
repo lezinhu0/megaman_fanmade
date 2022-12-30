@@ -10,7 +10,7 @@ class SpiritBomb {
 
         for (var i = 0; i <= 24; i++) {
             var img = new Image();
-            img.src = '../Assets/fx/glow-circle/25/2500' + (i < 10 ? '0' + i : i) + '.png';
+            img.src = '../Assets/fx/glow-circle/24/2400' + (i < 10 ? '0' + i : i) + '.png';
             img.duration = 1;
             animation.imgs.push(img);
         }

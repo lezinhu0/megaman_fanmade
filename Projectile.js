@@ -19,7 +19,7 @@ class Projectile {
         this.height = 45;
         this.x = x - this.width / 2;
         this.y = y - this.height / 2;
-        this.speed = 20;
+        this.speed = 30;
         this.velX = facingRight ? this.speed : -this.speed;
         this.velY = 0;
         this.type = 'projectile';

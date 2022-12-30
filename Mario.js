@@ -307,11 +307,11 @@ class Mario {
 
     render = function() {
         g.fillStyle = 'green';
-        g.fillRect(this.x, this.y - 20, this.width * clamp((this.hp / this.maxHp), 0, 100), 5);
+        g.fillRect(this.x + 20, this.y, (this.width - 40) * clamp((this.hp / this.maxHp), 0, 100), 5);
 
         g.strokeStyle = 'black';
         g.beginPath();
-        g.rect(this.x, this.y - 20, this.width, 5);
+        g.rect(this.x + 20, this.y, this.width - 40, 5);
         g.stroke();
 
         if (!this.visible) {
@@ -328,9 +328,9 @@ class Mario {
             g.restore();
         }
 
-        g.strokeStyle = 'red';
-        g.beginPath();
-        g.rect(this.getHurtbox().x, this.getHurtbox().y, this.getHurtbox().width, this.getHurtbox().height);
-        g.stroke();
+        // g.strokeStyle = 'red';
+        // g.beginPath();
+        // g.rect(this.getHurtbox().x, this.getHurtbox().y, this.getHurtbox().width, this.getHurtbox().height);
+        // g.stroke();
     }
 }
